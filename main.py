@@ -33,6 +33,19 @@ def train(args: argparse.Namespace,
           dataset_path: str, 
           device: torch.device,
           ) -> nn.Module:
+    """
+    Train the PADIM model.
+
+    Args:
+        args (argparse.Namespace): The command line arguments.
+        model_data_path (str): The path to the model data.
+        dataset_path (str): The path to the dataset.
+        device (torch.device): The device to run the model on.
+
+    Returns:
+        nn.Module: The trained PADIM model.
+    """
+
     # init dataset and dataloader 
     dataset = WaferDataset(dataset_path=dataset_path, class_name=args.class_name)
     dataloader = DataLoader(dataset, batch_size=args.batch_size)
@@ -66,7 +79,19 @@ def test(args: argparse.Namespace,
          device: torch.device,
          model: torch.nn.Module
          ) -> None:
+    """
+    Test the PADIM model.
 
+    Args:
+        args (argparse.Namespace): The command line arguments.
+        model_data_path (str): The path to the model data.
+        dataset_path (str): The path to the dataset.
+        device (torch.device): The device to run the model on.
+        model (torch.nn.Module): The PADIM model to be tested.
+
+    Returns:
+        None
+    """
     dataset = WaferDataset(dataset_path=dataset_path, class_name=args.class_name, 
                                                     is_train=False, defected_only=True)
     dataloader = DataLoader(dataset, batch_size=1)
@@ -77,6 +102,7 @@ def test(args: argparse.Namespace,
 
     # TODO: Save results into the output folder.
     # TODO: Add additional visualization options.
+
 
 def main():
     """

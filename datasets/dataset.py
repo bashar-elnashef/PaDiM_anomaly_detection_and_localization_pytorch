@@ -1,14 +1,23 @@
 import os
 import torch
 from PIL import Image
+import torch
 from torch.utils.data import Dataset
 from utils.util import image_trsfm, mask_trsfm
+from torchvision import transforms as T
+from typing import Tuple, List, Optional, Callable, Union
+import numpy as np
 
-CLASS_NAMES = ['test0', 'test3']
+CLASS_NAMES = ['test0']
 
 class WaferDataset(Dataset):
-    def __init__(self, dataset_path='datasets\wafer', class_name='test0', is_train=True,
-                 image_transforms=image_trsfm, mask_transforms=mask_trsfm, defected_only=False):
+    def __init__(self, 
+                 dataset_path: str='datasets\wafer', 
+                 class_name: str='test0', 
+                 is_train: bool=True,
+                 image_transforms: T.Compose=image_trsfm, 
+                 mask_transforms: T.Compose=mask_trsfm, 
+                 defected_only: bool=False) -> None:
         assert (
             class_name in CLASS_NAMES
         ), f'class_name: {class_name}, should be in {CLASS_NAMES}'
@@ -23,7 +32,7 @@ class WaferDataset(Dataset):
         self.image_transforms = image_transforms
         self.mask_transforms = mask_transforms
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, int, torch.Tensor]:
         x, y, mask = self.x[idx], self.y[idx], self.mask[idx]
 
         x = Image.open(x).convert('RGB')
@@ -40,7 +49,7 @@ class WaferDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-    def load_dataset_folder(self):
+    def load_dataset_folder(self) -> Tuple[List[np.ndarray], List[int], List[np.ndarray]]:
         phase = 'train' if self.is_train else 'test'
         x, y, mask = [], [], []
 
