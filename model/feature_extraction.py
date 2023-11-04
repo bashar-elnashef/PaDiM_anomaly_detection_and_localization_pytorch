@@ -124,6 +124,7 @@ class ResnetEmbeddingsExtractor(torch.nn.Module):
         return cast(torch.Tensor, embedding_vectors)
 
 
+# TODO: Check if this can be implemented using F.interpolate() rather than using the fold and unfold 
 def concatenate_layers(layers: List[torch.Tensor]) -> torch.Tensor:
     """Scale all tensors to the heigth and width of the first tensor and concatenate them."""
 
@@ -131,6 +132,28 @@ def concatenate_layers(layers: List[torch.Tensor]) -> torch.Tensor:
     for layer in layers[1:]:
         expanded_layers = concatenate_two_layers(expanded_layers, layer)
     return expanded_layers
+
+# TODO: Remove this once we have support for multiple layers with the same name and dimensions  
+
+# def concatenate_two_layers(layer1: torch.Tensor, layer2: torch.Tensor) -> torch.Tensor:
+#     """Scale the second tensor to the height and width of the first tensor and concatenate them."""
+
+#     device = layer1.device
+#     batch_length, channel_num1, height1, width1 = layer1.size()
+#     _, channel_num2, height2, width2 = layer2.size()
+#     height_ratio = int(height1 / height2)
+#     layer1 = F.unfold(layer1, kernel_size=height_ratio, dilation=1, stride=height_ratio)
+#     layer1 = layer1.view(batch_length, channel_num1, -1, height2, width2)
+#     result = torch.zeros(batch_length, channel_num1 + channel_num2, layer1.size(2),
+#                          height2, width2, device=device)
+#     for i in range(layer1.size(2)):
+#         result[:, :, i, :, :] = torch.cat((layer1[:, :, i, :, :], layer2), 1)
+#     del layer1
+#     del layer2
+#     result = result.view(batch_length, -1, height2 * width2)
+#     result = F.fold(result, kernel_size=height_ratio,
+#                     output_size=(height1, width1), stride=height_ratio)
+#     return result
 
 
 def concatenate_two_layers(layer1: torch.Tensor, layer2: torch.Tensor) -> torch.Tensor:
@@ -142,13 +165,12 @@ def concatenate_two_layers(layer1: torch.Tensor, layer2: torch.Tensor) -> torch.
     height_ratio = int(height1 / height2)
     layer1 = F.unfold(layer1, kernel_size=height_ratio, dilation=1, stride=height_ratio)
     layer1 = layer1.view(batch_length, channel_num1, -1, height2, width2)
-    result = torch.zeros(batch_length, channel_num1 + channel_num2, layer1.size(2),
-                         height2, width2, device=device)
-    for i in range(layer1.size(2)):
-        result[:, :, i, :, :] = torch.cat((layer1[:, :, i, :, :], layer2), 1)
+    layer2 = layer2.unsqueeze(2).expand(-1, -1, layer1.size(2), -1, -1)
+    result = torch.cat((layer1, layer2), 1)
     del layer1
     del layer2
     result = result.view(batch_length, -1, height2 * width2)
     result = F.fold(result, kernel_size=height_ratio,
                     output_size=(height1, width1), stride=height_ratio)
     return result
+
