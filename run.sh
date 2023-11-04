@@ -1,0 +1,1 @@
+python main.py --data_path datasets/wafer --save_path output --batch_size 32 --backbone wide_resnet50 

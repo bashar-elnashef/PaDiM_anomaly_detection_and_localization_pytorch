@@ -1,0 +1,7 @@
+skimage
+pytorch
+torchvision
+diplib
+tqdm
+sklearn
+matplotlib
