@@ -3,6 +3,10 @@
 This repostory contains a set of functions and classes for performing anomaly detection and localization using an  unofficial implementations of [**PaDiM**](https://arxiv.org/abs/2011.08785) in pytorch.
 
 
+![PaDiM: a Patch Distribution Modeling Framework for Anomaly Detection and Localization](padim_framework.png)
+
+
+
 This code is heavily borrowed from both SPADE-pytorch(https://github.com/byungjae89/SPADE-pytorch), MahalanobisAD-pytorch(https://github.com/byungjae89/MahalanobisAD-pytorch), anodet: anomaly detection on images using features from pretrained neural networks. https://github.com/OpenAOI/anodet, and PaDiM-Anomaly-Detection-Localization-master(https://github.com/xiahaifeng1995/PaDiM-Anomaly-Detection-Localization-master#reference) projects.
 
 
